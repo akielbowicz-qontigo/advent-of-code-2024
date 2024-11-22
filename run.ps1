@@ -27,7 +27,7 @@ function Invoke-Solution {
 }
 
 
-$solutions = Get-ChildItem (Join-Path $PSScriptRoot solutions)
+$solutions = Get-ChildItem (Join-Path $PSScriptRoot solutions) # | where {$_.Name -ne "template"} 
 $solutionPath = (Join-Path $PSScriptRoot solutions $solution)
 
 $solExists = Test-Path -Path $solutionPath -PathType Container
