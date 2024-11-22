@@ -28,7 +28,7 @@ To configure a project and install its dependencies run:
 Copy the template solution `solutions/template` 
 
 ```powershell
-cp -Recursive solutions/template solutions/mySolution
+cp -Recursive solutions/template solutions/mySolution-{initials}-{language}
 ```
 
 Then you have to populate three files, which are self explanatory:
