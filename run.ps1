@@ -1,14 +1,31 @@
 param(
     [int]$day,
     [string]$solution,
-    [switch]$setup
+    [switch]$setup,
+    [switch]$overrideResult
 )
 
 function Resolve-InputPath {
     param(
         [int]$day
     )
-    Resolve-Path (Join-Path $PSScriptRoot problems ("day-{0:D2}" -f $day) input.txt)
+    Resolve-ProblemsPath $day input.txt
+}
+
+function Resolve-ResultPath {
+    param(
+        [int]$day
+    )
+    Resolve-ProblemsPath $day result.txt
+}
+
+
+function Resolve-ProblemsPath {
+    param (
+        [int]$day,
+        [string]$name
+    )
+    Resolve-Path (Join-Path $PSScriptRoot problems ("day-{0:D2}" -f $day) $name)
 }
 
 function Invoke-Solution {    
@@ -26,6 +43,18 @@ function Invoke-Solution {
     $result
 }
 
+function Override-Result {
+    param(
+        [int]$day,
+        $newResult
+    )
+    $newResult | Out-File (Resolve-ResultPath $day)
+}
+
+if ($overrideResult -and [string]::IsNullOrEmpty($solution)){
+    Write-Error "Can not override result without a specific solution. Please provide a solution name: '-solution mySolution'"
+    exit 1
+}
 
 $solutions = Get-ChildItem (Join-Path $PSScriptRoot solutions) # | where {$_.Name -ne "template"} 
 $solutionPath = (Join-Path $PSScriptRoot solutions $solution)
@@ -56,4 +85,14 @@ foreach ($solution in $solutions) {
     $results.add($solution, $solutionResults)
 }
 
-$results
+if ($overrideResult){
+    Write-Host "Overriding results"
+    $res = $results[$solution]
+    if ($day -eq 0){
+        1..31 | %{ Override-Result $_ $res[$_] }
+    }else{
+        Override-Result $day $res[0]
+    }
+}
+
+$results | Format-List
