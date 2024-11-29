@@ -51,6 +51,45 @@ function Override-Result {
     $newResult | Out-File (Resolve-ResultPath $day)
 }
 
+function Get-ExpectedResult {
+    param(
+        [Parameter(ValueFromPipeline=$true)]
+        [int]$day
+    )
+    process {
+        Get-Content (Resolve-ResultPath $day)
+    }
+}
+
+function Format-Results {
+    param(
+        $results,
+        $expectedResults,
+        $day
+    )
+    
+    $days = ($day -eq 0) ? 0..30 : @($day-1)
+
+    
+    $out = $results.GetEnumerator() | %{
+        $pair = $_
+        $t = @{"Solution" = $pair.Key }
+        $days | %{
+            $d = $_ 
+            $i = ($day -eq 0) ? $d : 0
+            $actual = $pair.Value[$i]
+            $expected = $expectedResults[$d]
+            Write-Debug "i:$i, d:$d, actual: $actual, expected: $expected"
+            $c = ($actual -eq $expected) ? "✅" : "❌ a:$actual != e:$expected"
+            $t.Add("Day {0:D2}" -f ($d+1), $c )
+         }
+         
+        [PSCustomObject]$t
+    } 
+    $out
+}
+
+
 if ($overrideResult -and [string]::IsNullOrEmpty($solution)){
     Write-Error "Can not override result without a specific solution. Please provide a solution name: '-solution mySolution'"
     exit 1
@@ -62,7 +101,7 @@ $solutionPath = (Join-Path $PSScriptRoot solutions $solution)
 $solExists = Test-Path -Path $solutionPath -PathType Container
 
 if (-not [string]::IsNullOrEmpty($solution) -and $solExists){
-    $solutions = $( $solutionPath )
+    $solutions = $( (Get-Item $solutionPath) )
 }elseif (-not [string]::IsNullOrEmpty($solution) -and -not $solExists){
     throw "Solution '$solutionPath' does not exist."
 }
@@ -75,14 +114,14 @@ if ($setup){
     Write-Host "Completed setup"
     return
 }
-$results = @{}
 
-foreach ($solution in $solutions) {
-    $build = (Join-Path $solution build.ps1)
-    $runPath = (Join-Path $solution run.ps1)
+$results = @{}
+foreach ($solutionPath in $solutions) {
+    $build = (Join-Path $solutionPath build.ps1)
+    $runPath = (Join-Path $solutionPath run.ps1)
     . $build
     $solutionResults = Invoke-Solution $runPath $day
-    $results.add($solution, $solutionResults)
+    $results.add($solutionPath.Name, $solutionResults)
 }
 
 if ($overrideResult){
@@ -93,6 +132,9 @@ if ($overrideResult){
     }else{
         Override-Result $day $res[0]
     }
+    return
 }
 
-$results | Format-List
+$expectedResults = 1..31 | Get-ExpectedResult
+
+Format-Results $results $expectedResults $day
