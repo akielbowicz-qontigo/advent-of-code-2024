@@ -34,7 +34,7 @@ function Invoke-Solution {
         [int]$day)
 
     if ($day -eq 0){
-        $days = 1..31
+        $days = 1..25
     } else {
         $days = @($day) 
     }    
@@ -70,7 +70,7 @@ function Format-Results {
     $isSingleResult = $day -gt 0
     Write-Debug "Is single day: $isSingleResult"
     Write-Debug "Results: $($results | Out-String)"
-    $days = $isSingleResult ? @($day-1) : 0..30  
+    $days = $isSingleResult ? @($day-1) : 0..24
 
     Write-Host $results, $days    
     $out = $results.GetEnumerator() | %{
@@ -131,13 +131,13 @@ if ($overrideResult){
     Write-Host "Overriding results"
     $res = $results[$solution]
     if ($day -eq 0){
-        1..31 | %{ Override-Result $_ $res[$_] }
+        1..25 | %{ Override-Result $_ $res[$_] }
     }else{
         Override-Result $day $res[0]
     }
     return
 }
 
-$expectedResults = 1..31 | Get-ExpectedResult
+$expectedResults = 1..25 | Get-ExpectedResult
 Write-Debug "Expected results: $expectedResults"
 Format-Results $results $expectedResults $day
