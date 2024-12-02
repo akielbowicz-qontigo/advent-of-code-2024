@@ -69,7 +69,7 @@ function Format-Results {
     )
     $isSingleResult = $day -gt 0
     Write-Debug "Is single day: $isSingleResult"
-    Write-Debug "Results: $results"
+    Write-Debug "Results: $($results | Out-String)"
     $days = $isSingleResult ? @($day-1) : 0..30  
 
     Write-Host $results, $days    
