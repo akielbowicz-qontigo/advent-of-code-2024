@@ -36,7 +36,7 @@ function Invoke-Solution {
     if ($day -eq 0){
         $days = 1..31
     } else {
-        $days = $($day) 
+        $days = @($day) 
     }    
 
     $result = $days | %{ . $solution $_ (Resolve-InputPath $_)}
@@ -67,17 +67,19 @@ function Format-Results {
         $expectedResults,
         $day
     )
-    
-    $days = ($day -eq 0) ? 0..30 : @($day-1)
+    $isSingleResult = $day -gt 0
+    Write-Debug "Is single day: $isSingleResult"
+    Write-Debug "Results: $results"
+    $days = $isSingleResult ? @($day-1) : 0..30  
 
-    
+    Write-Host $results, $days    
     $out = $results.GetEnumerator() | %{
         $pair = $_
+        Write-Debug "values: $($pair.Value)"
         $t = @{"Solution" = $pair.Key }
         $days | %{
             $d = $_ 
-            $i = ($day -eq 0) ? $d : 0
-            $actual = $pair.Value[$i]
+            $actual = $isSingleResult ? $pair.Value : $pair.Value[$d]
             $expected = $expectedResults[$d]
             Write-Debug "i:$i, d:$d, actual: $actual, expected: $expected"
             $c = ($actual -eq $expected) ? "✅" : "❌ a:$actual != e:$expected"
@@ -123,6 +125,7 @@ foreach ($solutionPath in $solutions) {
     $solutionResults = Invoke-Solution $runPath $day
     $results.add($solutionPath.Name, $solutionResults)
 }
+Write-Debug "Actual results: $($results | Out-String)"
 
 if ($overrideResult){
     Write-Host "Overriding results"
@@ -136,5 +139,5 @@ if ($overrideResult){
 }
 
 $expectedResults = 1..31 | Get-ExpectedResult
-
+Write-Debug "Expected results: $expectedResults"
 Format-Results $results $expectedResults $day
