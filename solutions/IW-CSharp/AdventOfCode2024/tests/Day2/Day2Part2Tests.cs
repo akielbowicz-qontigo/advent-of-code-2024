@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode2024
 {
-    public class Day1Tests
+    public class Day2Part2Tests
     {
 
     }
