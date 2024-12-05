@@ -9,9 +9,13 @@
         diffs (map #(apply - %) new-pairs)]
     (reduce + diffs)))
 
+(defn day2 [lines]
+  1000)
+
 (defn solve [day lines]
   (cond
     (= (int day) 1) (day1 lines)
+    (= (int day) 2) (day2 lines)
   :else (+ 100 day)) )
 
 (defn -main [& args]
