@@ -38,3 +38,14 @@ Then you have to populate three files, which are self explanatory:
 - [run.ps1](./solutions/template/run.ps1)
 
 You can do whatever you what within your solution directory, but be considerate with the rest
+
+
+## How to get the inputs
+
+```powershell
+> $env:AOC_TOKEN="<your session token>"
+> get-input.ps1 -day 2 > problems/day-02/input.txt
+```
+
+To get your token you need to check the cookies once loged into AoC
+![](session-token.png)
