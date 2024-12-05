@@ -1,0 +1,2 @@
+{:paths ["src"]
+ :deps {io.github.clojure/clr.tools.nrepl {:git/tag "v0.1.2-alpha2" :git/sha "a58009f"}}}
