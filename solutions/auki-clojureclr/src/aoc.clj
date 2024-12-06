@@ -1,29 +1,64 @@
 (ns aoc
   (:require [clojure.string :as str]))
 
+(defn split-cols [lines]
+  (let  [
+         pairs (map #(str/split % #"\s+") lines)
+         left  (map (comp int first) pairs) 
+         right (map (comp int second) pairs)] 
+        
+    [left, right]))
+
 (defn day1 [lines]
-  (let [pairs (map #(str/split % #"\s+") lines)
-        left  (sort (map (comp int first) pairs))
-        right (sort (map (comp int second) pairs))
-        new-pairs (map vector left right)
+  (let [[left right] (split-cols lines)
+        new-pairs (map vector (sort left) (sort right))
         diffs (map #(apply - %) new-pairs)]
-    (reduce + diffs)))
+    (reduce + (map abs diffs))))
+
+(defn counter [coll]
+  (reduce (fn [counts num]
+            (update counts num (fnil inc 0)))
+          {}
+          coll))
+
+(defn day1-2 [lines]
+  (let [[left right] (split-cols lines)
+         right-counts (counter right)
+        weighted (map #(apply * [% (get right-counts % 0)]) left)]
+    (reduce + weighted)))
 
 (defn day2 [lines]
-  1000)
+  0)
 
 (defn solve [day lines]
   (cond
     (= (int day) 1) (day1 lines)
     (= (int day) 2) (day2 lines)
-  :else (+ 100 day)) )
+   :else (+ 100 day)))
+
+(comment
+  (def input "../../problems/day-01/input.txt")
+  (def lines (read-content input))
+  (split-cols lines) 
+  (day1 lines)
+  ((counter (second (split-cols lines)) ) 0)  
+  (day1-2 lines)
+  )
+
+(defn read-content [input]
+  (let [
+        file-content (slurp input)
+        lines        (str/split-lines file-content)]
+        
+    lines))
+  
+
 
 (defn -main [& args]
   (let [[day input] args
-        file-content (slurp input)
-        lines (str/split-lines file-content)
+        lines (read-content input)
         result (solve day lines)] 
-  result))
+   result))
 
 ;; (defn -main [& args]
 ;;   (println (str "HELLO FROM CLOJURE:" args))
