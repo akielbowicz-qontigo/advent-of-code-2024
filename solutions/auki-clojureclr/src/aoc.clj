@@ -8,7 +8,7 @@
 (defn solve [day lines]
   (cond
     (= (int day) 1) (day1 lines)
-    (= (int day) 2) (day2/day2 lines)
+    (= (int day) 2) (day2/day2-2 lines)
    :else (+ 100 day)))
 
 (comment

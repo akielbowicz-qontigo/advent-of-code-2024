@@ -2,5 +2,6 @@
  :deps {;; To connect VSCode + Calva start the server with : 'cljr -i .\start-nrepl.clj'
         io.github.clojure/clr.tools.nrepl {:git/tag "v0.1.2-alpha2" :git/sha "a58009f"}}
 
+;; TODO: use https://github.com/clojure/clr.core.cli/?tab=readme-ov-file#running-tests
  :aliases {:test {:extra-paths ["test"]
                   :main-opts ["-m" "test-runner"]}}}

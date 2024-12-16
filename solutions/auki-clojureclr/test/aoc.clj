@@ -34,4 +34,4 @@
 
 (deftest test-day2-p2
   (testing "Day 2 part 2" 
-    (is (= 11 (day2-2 day2-input)))))
+    (is (= 4 (day2-2 day2-input)))))
