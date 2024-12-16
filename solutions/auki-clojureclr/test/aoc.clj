@@ -4,7 +4,8 @@
    [clojure.string :as str]
    [clojure.test :refer :all]
    [day1 :refer [day1 day1-2]]
-   [day2 :refer [day2 day2-2]]))
+   [day2 :refer [day2 day2-2]]
+   [day3 :refer [day3 day3-2]]))
 
 (def day1-input (str/split-lines "3   4
 4   3
@@ -35,3 +36,16 @@
 (deftest test-day2-p2
   (testing "Day 2 part 2" 
     (is (= 4 (day2-2 day2-input)))))
+
+(def day3-input (str/split-lines "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
+"))
+
+(def day3-2-input (str/split-lines "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"))
+
+(deftest test-day3
+  (testing "Day 3"
+    (is (= 161 (day3 day3-input)))))
+
+(deftest test-day3-p2
+  (testing "Day 3 part 2"
+    (is (= 48 (day3-2 day3-2-input)))))
