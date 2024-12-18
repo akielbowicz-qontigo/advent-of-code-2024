@@ -9,14 +9,14 @@ namespace AdventOfCode2024
             var total = 0;
             foreach (string line in File.ReadLines(filePath))
             {
-                var searchPattern = @"mul\((\d+),(\d+)\)";
+                var searchPattern = @"(mul)\((\d+),(\d+)\)";
                 MatchCollection matches = Regex.Matches(line, searchPattern);
 
                 var currentTotal = 0;
                 foreach (Match match in matches)
                 {
-                    var first = int.Parse(match.Groups[1].Value);
-                    var second = int.Parse(match.Groups[2].Value);
+                    var first = int.Parse(match.Groups[2].Value);
+                    var second = int.Parse(match.Groups[3].Value);
                     currentTotal += first * second;
                 }
                 total += currentTotal;
