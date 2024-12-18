@@ -6,10 +6,11 @@ namespace AdventOfCode2024
     {
         public static double Day3Part1Main(string filePath)
         {
+            var searchPattern = @"(mul)\((\d+),(\d+)\)";
+
             var total = 0;
             foreach (string line in File.ReadLines(filePath))
             {
-                var searchPattern = @"(mul)\((\d+),(\d+)\)";
                 MatchCollection matches = Regex.Matches(line, searchPattern);
 
                 var currentTotal = 0;
