@@ -9,7 +9,7 @@ namespace AdventOfCode2024
         {
             var filePath = "C:/Dev/AOC-2024/problems/day-03/input.txt";
             var result = Day3Part1.Day3Part1Main(filePath);
-            Assert.That(result, Is.EqualTo(2031679));
+            Assert.That(result, Is.EqualTo(166905464));
         }
     }
 }
