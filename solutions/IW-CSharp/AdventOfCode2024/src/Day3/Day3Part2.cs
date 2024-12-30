@@ -24,7 +24,6 @@ namespace AdventOfCode2024
                         var second = int.Parse(match.Groups[3].Value);
                         currentTotal += first * second;
                     }
-                    
                 }
 
                 total += currentTotal;
