@@ -11,8 +11,8 @@ namespace AdventOfCode2024
             var numberOfLines = File.ReadLines(filePath).Count();
             var numberOfChars = File.ReadLines(filePath).First().Length;  // All lines have the same length, we can use the first one.
 
-            var horizontalsLeftToRight = ComputeHorizontalsLeftToRight(filePath, searchWord);
-            var horizontalsRightToLeft = ComputeHorizontalsRightToLeft(filePath, searchWord);
+            var horizontalsLeftToRight = ComputeHorizontals(filePath, searchWord, RowDirection.LeftToRight);
+            var horizontalsRightToLeft = ComputeHorizontals(filePath, searchWord, RowDirection.RightToLeft);
 
             var verticalsUpToDown = ComputeVerticals(filePath, numberOfLines, numberOfChars, searchWord, ColumnDirection.UpToDown);
             var verticalsDownToUp = ComputeVerticals(filePath, numberOfLines, numberOfChars, searchWord, ColumnDirection.DownToUp);
@@ -29,37 +29,21 @@ namespace AdventOfCode2024
             return total;
         }
 
-        private static int ComputeHorizontalsLeftToRight(string filePath, string searchWord)
+        private static int ComputeHorizontals(string filePath, string searchWord, RowDirection direction)
         {
-            var horizontalsLeftToRight = 0;
+            // If we look for the word from right to left, we can just reverse it and search for it this way.
+            if (direction == RowDirection.RightToLeft)
+            {
+                searchWord = searchWord.Reverse();
+            }
+
+            var counter = 0;
             foreach (var line in File.ReadLines(filePath))
             {
-                horizontalsLeftToRight += HorizontalsLeftToRight(line, searchWord);
+                counter += Regex.Matches(line, searchWord).Count;
             }
-            return horizontalsLeftToRight;
-        }
 
-        private static int HorizontalsLeftToRight(string line, string searchWord)
-        {
-            var totalMatches = Regex.Matches(line, searchWord).Count;
-            return totalMatches;
-        }
-
-        private static int ComputeHorizontalsRightToLeft(string filePath, string searchWord)
-        {
-            var horizontalsRightToLeft = 0;
-            foreach (var line in File.ReadLines(filePath))
-            {
-                horizontalsRightToLeft += HorizontalsRightToLeft(line, searchWord);
-            }
-            return horizontalsRightToLeft;
-        }
-
-        private static int HorizontalsRightToLeft(string line, string searchWord)
-        {
-            var reversedLine = line.Reverse();
-            var totalMatches = HorizontalsLeftToRight(reversedLine, searchWord);
-            return totalMatches;
+            return counter;
         }
 
         private static int ComputeVerticals(string filePath, int numberOfLines, int numberOfChars, string searchWord, ColumnDirection direction)
@@ -259,6 +243,12 @@ namespace AdventOfCode2024
             }
 
             return counter;
+        }
+
+        private enum RowDirection
+        {
+            LeftToRight,
+            RightToLeft
         }
 
         private enum ColumnDirection
