@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using static AdventOfCode2024.Day4Utilities;
 
 namespace AdventOfCode2024
 {
@@ -186,26 +187,6 @@ namespace AdventOfCode2024
             }
 
             return counter;
-        }
-
-        private enum RowDirection
-        {
-            LeftToRight,
-            RightToLeft
-        }
-
-        private enum ColumnDirection
-        {
-            UpToDown,
-            DownToUp
-        }
-
-        private enum DiagonalDirection
-        {
-            NE,
-            SE,
-            SW,
-            NW
         }
 
         /// <summary>
