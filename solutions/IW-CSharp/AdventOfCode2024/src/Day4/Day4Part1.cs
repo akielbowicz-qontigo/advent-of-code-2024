@@ -53,27 +53,27 @@ namespace AdventOfCode2024
             var lines = new List<string>() { "", "", "", "" };
             var enumerator = File.ReadLines(filePath).GetEnumerator();
 
-            // Save first 4 lines.
+            // Save the first lines in the list.
             for (var currentLine = 0; currentLine < 4; currentLine++)
             {
                 enumerator.MoveNext();
                 lines[currentLine] = enumerator.Current;
             }
 
-            // Search for the word in the columns of the first lines.
+            // Search in the columns of the first lines.
             counter += CountWordInColumns(lines, numberOfChars, searchWord, direction);
 
-            // Search for the word in columns from up to down.
+            // With the first lines already in the list, let's iterate over all the lines.
             for (var currentLine = 4; currentLine < numberOfLines; currentLine++)
             {
-                // Update the lines for the next iteration.
+                // Shift the lines for the next iteration.
                 enumerator.MoveNext();
                 lines[0] = lines[1];
                 lines[1] = lines[2];
                 lines[2] = lines[3];
                 lines[3] = enumerator.Current;
 
-                // Search for the word in all the columns of the current lines.
+                // Search in the columns of the current lines.
                 counter += CountWordInColumns(lines, numberOfChars, searchWord, direction);
             }
 
@@ -118,27 +118,27 @@ namespace AdventOfCode2024
             var lines = new List<string>() { "", "", "", "" };
             var enumerator = File.ReadLines(filePath).GetEnumerator();
 
-            // Save first 4 lines.
+            // Save the first lines in the list.
             for (var currentLine = 0; currentLine < 4; currentLine++)
             {
                 enumerator.MoveNext();
                 lines[currentLine] = enumerator.Current;
             }
 
-            // Search for the word in the diagonals NE of the first lines.
+            // Search in the diagonals of the first lines.
             counter += CountWordInDiagonals(lines, numberOfChars, searchWord, direction);
 
-            // Search for the word in diagonals NE.
+            // With the first lines already in the list, let's iterate over all the lines.
             for (var currentLine = 4; currentLine < numberOfLines; currentLine++)
             {
-                // Update the lines for the next iteration.
+                // Shift the lines for the next iteration.
                 enumerator.MoveNext();
                 lines[0] = lines[1];
                 lines[1] = lines[2];
                 lines[2] = lines[3];
                 lines[3] = enumerator.Current;
 
-                // Search for the word in all the diagonals NE of the current lines.
+                // Search in the diagonals of the current lines.
                 counter += CountWordInDiagonals(lines, numberOfChars, searchWord, direction);
             }
 
@@ -147,6 +147,7 @@ namespace AdventOfCode2024
 
         private static int CountWordInDiagonals(List<string> lines, int numberOfChars, string searchWord, DiagonalDirection direction)
         {
+            // Based on the direction (east or west) we need to adjust the start and end of the loop so that we don't go out of bounds.
             var indexStart = 0;
             var indexEnd = 0;
             if (direction == DiagonalDirection.SE || direction == DiagonalDirection.NE)
