@@ -47,14 +47,16 @@
 
         private static int CountCurrentCrosses(List<string> lines, int numberOfChars, string searchWord)
         {
+            var searchWordReversed = searchWord.Reverse();
+
             var counter = 0;
             for (var i = 0; i < numberOfChars - 2; i++)
             {
                 var strSE = $"{lines[0][i]}{lines[1][i + 1]}{lines[2][i + 2]}";
                 var strNE = $"{lines[2][i]}{lines[1][i + 1]}{lines[0][i + 2]}";
 
-                if ((strSE == searchWord || strSE == searchWord.Reverse())
-                    && (strNE == searchWord || strNE == searchWord.Reverse()))
+                if ((strSE == searchWord || strSE == searchWordReversed) &&
+                    (strNE == searchWord || strNE == searchWordReversed))
                 {
                     counter++;
                 }
