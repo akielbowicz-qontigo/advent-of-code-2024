@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using static AdventOfCode2024.Day4Utilities;
 
 namespace AdventOfCode2024
 {
@@ -12,42 +11,29 @@ namespace AdventOfCode2024
             var numberOfLines = File.ReadLines(filePath).Count();
             var numberOfChars = File.ReadLines(filePath).First().Length;  // All lines have the same length, we can use the first one.
 
-            var horizontalsLeftToRight = ComputeHorizontals(filePath, searchWord, RowDirection.LeftToRight);
-            var horizontalsRightToLeft = ComputeHorizontals(filePath, searchWord, RowDirection.RightToLeft);
+            var horizontals = ComputeHorizontals(filePath, searchWord);
+            var verticals = ComputeVerticals(filePath, numberOfLines, numberOfChars, searchWord);
+            var diagonals = ComputeDiagonals(filePath, numberOfLines, numberOfChars, searchWord);
 
-            var verticalsUpToDown = ComputeVerticals(filePath, numberOfLines, numberOfChars, searchWord, ColumnDirection.UpToDown);
-            var verticalsDownToUp = ComputeVerticals(filePath, numberOfLines, numberOfChars, searchWord, ColumnDirection.DownToUp);
-
-            var diagonalsNE = ComputeDiagonals(filePath, numberOfLines, numberOfChars, searchWord, DiagonalDirection.NE);
-            var diagonalsSE = ComputeDiagonals(filePath, numberOfLines, numberOfChars, searchWord, DiagonalDirection.SE);
-            var diagonalsSW = ComputeDiagonals(filePath, numberOfLines, numberOfChars, searchWord, DiagonalDirection.SW);
-            var diagonalsNW = ComputeDiagonals(filePath, numberOfLines, numberOfChars, searchWord, DiagonalDirection.NW);
-
-            var total = horizontalsLeftToRight + horizontalsRightToLeft +
-                verticalsUpToDown + verticalsDownToUp +
-                diagonalsNE + diagonalsSE + diagonalsSW + diagonalsNW;
-
+            var total = horizontals + verticals + diagonals;
             return total;
         }
 
-        private static int ComputeHorizontals(string filePath, string searchWord, RowDirection direction)
+        private static int ComputeHorizontals(string filePath, string searchWord)
         {
-            // If we look for the word from right to left, we can just reverse it and search for it this way.
-            if (direction == RowDirection.RightToLeft)
-            {
-                searchWord = searchWord.Reverse();
-            }
-
+            var searchWordReversed = searchWord.Reverse();
+            
             var counter = 0;
             foreach (var line in File.ReadLines(filePath))
             {
                 counter += Regex.Matches(line, searchWord).Count;
+                counter += Regex.Matches(line, searchWordReversed).Count;
             }
 
             return counter;
         }
 
-        private static int ComputeVerticals(string filePath, int numberOfLines, int numberOfChars, string searchWord, ColumnDirection direction)
+        private static int ComputeVerticals(string filePath, int numberOfLines, int numberOfChars, string searchWord)
         {
             var counter = 0;
             var lines = new List<string>() { "", "", "", "" };
@@ -61,7 +47,7 @@ namespace AdventOfCode2024
             }
 
             // Search in the columns of the first lines.
-            counter += CountWordInColumns(lines, numberOfChars, searchWord, direction);
+            counter += CountWordInColumns(lines, numberOfChars, searchWord);
 
             // With the first lines already in the list, let's iterate over all the lines.
             for (var currentLine = 4; currentLine < numberOfLines; currentLine++)
@@ -74,7 +60,7 @@ namespace AdventOfCode2024
                 lines[3] = enumerator.Current;
 
                 // Search in the columns of the current lines.
-                counter += CountWordInColumns(lines, numberOfChars, searchWord, direction);
+                counter += CountWordInColumns(lines, numberOfChars, searchWord);
             }
 
             return counter;
@@ -87,23 +73,15 @@ namespace AdventOfCode2024
         /// <param name="numberOfChars">The number of characters that the lines have. This will determine the number of columns.</param>
         /// <param name="searchWord">The word to search and count its appearances.</param>
         /// <returns>The number of times the word appears.</returns>
-        private static int CountWordInColumns(List<string> lines, int numberOfChars, string searchWord, ColumnDirection direction)
+        private static int CountWordInColumns(List<string> lines, int numberOfChars, string searchWord)
         {
+            var searchWordReversed = searchWord.Reverse();
+            
             var counter = 0;
             for (var i = 0; i < numberOfChars; i++)
             {
-                var str = "";
-                switch (direction)
-                {
-                    case ColumnDirection.UpToDown:
-                        str = $"{lines[0][i]}{lines[1][i]}{lines[2][i]}{lines[3][i]}";
-                        break;
-                    case ColumnDirection.DownToUp:
-                        str = $"{lines[3][i]}{lines[2][i]}{lines[1][i]}{lines[0][i]}";
-                        break;
-                }
-
-                if (str == searchWord)
+                var str = $"{lines[0][i]}{lines[1][i]}{lines[2][i]}{lines[3][i]}";
+                if (str == searchWord || str == searchWordReversed)
                 {
                     counter++;
                 }
@@ -112,7 +90,7 @@ namespace AdventOfCode2024
             return counter;
         }
 
-        private static int ComputeDiagonals(string filePath, int numberOfLines, int numberOfChars, string searchWord, DiagonalDirection direction)
+        private static int ComputeDiagonals(string filePath, int numberOfLines, int numberOfChars, string searchWord)
         {
             var counter = 0;
             var lines = new List<string>() { "", "", "", "" };
@@ -126,7 +104,7 @@ namespace AdventOfCode2024
             }
 
             // Search in the diagonals of the first lines.
-            counter += CountWordInDiagonals(lines, numberOfChars, searchWord, direction);
+            counter += CountWordInDiagonals(lines, numberOfChars, searchWord);
 
             // With the first lines already in the list, let's iterate over all the lines.
             for (var currentLine = 4; currentLine < numberOfLines; currentLine++)
@@ -139,49 +117,28 @@ namespace AdventOfCode2024
                 lines[3] = enumerator.Current;
 
                 // Search in the diagonals of the current lines.
-                counter += CountWordInDiagonals(lines, numberOfChars, searchWord, direction);
+                counter += CountWordInDiagonals(lines, numberOfChars, searchWord);
             }
 
             return counter;
         }
 
-        private static int CountWordInDiagonals(List<string> lines, int numberOfChars, string searchWord, DiagonalDirection direction)
+        private static int CountWordInDiagonals(List<string> lines, int numberOfChars, string searchWord)
         {
-            // Based on the direction (east or west) we need to adjust the start and end of the loop so that we don't go out of bounds.
-            var indexStart = 0;
-            var indexEnd = 0;
-            if (direction == DiagonalDirection.SE || direction == DiagonalDirection.NE)
-            {
-                indexStart = 0;
-                indexEnd = numberOfChars - 3;
-            }
-            else if (direction == DiagonalDirection.SW || direction == DiagonalDirection.NW)
-            {
-                indexStart = 3;
-                indexEnd = numberOfChars;
-            }
+            var searchWordReversed = searchWord.Reverse();
 
             var counter = 0;
-            for (var i = indexStart; i < indexEnd; i++)
+            for (var i = 0; i < numberOfChars - 3; i++)
             {
-                var str = "";
-                switch (direction)
-                {
-                    case DiagonalDirection.SE:
-                        str = $"{lines[0][i]}{lines[1][i + 1]}{lines[2][i + 2]}{lines[3][i + 3]}";
-                        break;
-                    case DiagonalDirection.NE:
-                        str = $"{lines[3][i]}{lines[2][i + 1]}{lines[1][i + 2]}{lines[0][i + 3]}";
-                        break;
-                    case DiagonalDirection.SW:
-                        str = $"{lines[0][i]}{lines[1][i - 1]}{lines[2][i - 2]}{lines[3][i - 3]}";
-                        break;
-                    case DiagonalDirection.NW:
-                        str = $"{lines[3][i]}{lines[2][i - 1]}{lines[1][i - 2]}{lines[0][i - 3]}";
-                        break;
-                }
+                var strSE = $"{lines[0][i]}{lines[1][i + 1]}{lines[2][i + 2]}{lines[3][i + 3]}";
+                var strNE = $"{lines[3][i]}{lines[2][i + 1]}{lines[1][i + 2]}{lines[0][i + 3]}";
 
-                if (str == searchWord)
+                if (strSE == searchWord || strSE == searchWordReversed)
+                {
+                    counter++;
+                }
+                
+                if (strNE == searchWord || strNE == searchWordReversed)
                 {
                     counter++;
                 }
