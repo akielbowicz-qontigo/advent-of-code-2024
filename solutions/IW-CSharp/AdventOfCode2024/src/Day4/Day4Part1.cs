@@ -8,23 +8,24 @@ namespace AdventOfCode2024
         {
             var searchWord = "XMAS";  // Note: This implementation will work for any word with 4 characters.
 
-            var numberOfLines = File.ReadLines(filePath).Count();
-            var numberOfChars = File.ReadLines(filePath).First().Length;  // All lines have the same length, we can use the first one.
+            var lines = File.ReadLines(filePath);
+            var numberOfLines = lines.Count();
+            var numberOfChars = lines.First().Length;  // All lines have the same length, we can use the first one.
 
-            var horizontals = ComputeHorizontals(filePath, searchWord);
-            var verticals = ComputeVerticals(filePath, numberOfLines, numberOfChars, searchWord);
-            var diagonals = ComputeDiagonals(filePath, numberOfLines, numberOfChars, searchWord);
+            var horizontals = ComputeHorizontals(lines, searchWord);
+            var verticals = ComputeVerticals(lines, numberOfLines, numberOfChars, searchWord);
+            var diagonals = ComputeDiagonals(lines, numberOfLines, numberOfChars, searchWord);
 
             var total = horizontals + verticals + diagonals;
             return total;
         }
 
-        private static int ComputeHorizontals(string filePath, string searchWord)
+        private static int ComputeHorizontals(IEnumerable<string> lines, string searchWord)
         {
             var searchWordReversed = searchWord.Reverse();
             
             var counter = 0;
-            foreach (var line in File.ReadLines(filePath))
+            foreach (var line in lines)
             {
                 counter += Regex.Matches(line, searchWord).Count;
                 counter += Regex.Matches(line, searchWordReversed).Count;
@@ -33,34 +34,34 @@ namespace AdventOfCode2024
             return counter;
         }
 
-        private static int ComputeVerticals(string filePath, int numberOfLines, int numberOfChars, string searchWord)
+        private static int ComputeVerticals(IEnumerable<string> lines, int numberOfLines, int numberOfChars, string searchWord)
         {
             var counter = 0;
-            var lines = new List<string>() { "", "", "", "" };
-            var enumerator = File.ReadLines(filePath).GetEnumerator();
+            var linesList = new List<string>() { "", "", "", "" };
+            var linesEnumerator = lines.GetEnumerator();
 
             // Save the first lines in the list.
             for (var currentLine = 0; currentLine < 4; currentLine++)
             {
-                enumerator.MoveNext();
-                lines[currentLine] = enumerator.Current;
+                linesEnumerator.MoveNext();
+                linesList[currentLine] = linesEnumerator.Current;
             }
 
             // Search in the columns of the first lines.
-            counter += CountWordInColumns(lines, numberOfChars, searchWord);
+            counter += CountWordInColumns(linesList, numberOfChars, searchWord);
 
             // With the first lines already in the list, let's iterate over all the lines.
             for (var currentLine = 4; currentLine < numberOfLines; currentLine++)
             {
                 // Shift the lines for the next iteration.
-                enumerator.MoveNext();
-                lines[0] = lines[1];
-                lines[1] = lines[2];
-                lines[2] = lines[3];
-                lines[3] = enumerator.Current;
+                linesEnumerator.MoveNext();
+                linesList[0] = linesList[1];
+                linesList[1] = linesList[2];
+                linesList[2] = linesList[3];
+                linesList[3] = linesEnumerator.Current;
 
                 // Search in the columns of the current lines.
-                counter += CountWordInColumns(lines, numberOfChars, searchWord);
+                counter += CountWordInColumns(linesList, numberOfChars, searchWord);
             }
 
             return counter;
@@ -90,34 +91,34 @@ namespace AdventOfCode2024
             return counter;
         }
 
-        private static int ComputeDiagonals(string filePath, int numberOfLines, int numberOfChars, string searchWord)
+        private static int ComputeDiagonals(IEnumerable<string> lines, int numberOfLines, int numberOfChars, string searchWord)
         {
             var counter = 0;
-            var lines = new List<string>() { "", "", "", "" };
-            var enumerator = File.ReadLines(filePath).GetEnumerator();
+            var linesList = new List<string>() { "", "", "", "" };
+            var linesEnumerator = lines.GetEnumerator();
 
             // Save the first lines in the list.
             for (var currentLine = 0; currentLine < 4; currentLine++)
             {
-                enumerator.MoveNext();
-                lines[currentLine] = enumerator.Current;
+                linesEnumerator.MoveNext();
+                linesList[currentLine] = linesEnumerator.Current;
             }
 
             // Search in the diagonals of the first lines.
-            counter += CountWordInDiagonals(lines, numberOfChars, searchWord);
+            counter += CountWordInDiagonals(linesList, numberOfChars, searchWord);
 
             // With the first lines already in the list, let's iterate over all the lines.
             for (var currentLine = 4; currentLine < numberOfLines; currentLine++)
             {
                 // Shift the lines for the next iteration.
-                enumerator.MoveNext();
-                lines[0] = lines[1];
-                lines[1] = lines[2];
-                lines[2] = lines[3];
-                lines[3] = enumerator.Current;
+                linesEnumerator.MoveNext();
+                linesList[0] = linesList[1];
+                linesList[1] = linesList[2];
+                linesList[2] = linesList[3];
+                linesList[3] = linesEnumerator.Current;
 
                 // Search in the diagonals of the current lines.
-                counter += CountWordInDiagonals(lines, numberOfChars, searchWord);
+                counter += CountWordInDiagonals(linesList, numberOfChars, searchWord);
             }
 
             return counter;
