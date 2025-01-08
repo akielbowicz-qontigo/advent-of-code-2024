@@ -3,24 +3,10 @@
     public static class Day4Utilities
     {
 
-        public enum RowDirection
+        public enum SearchType
         {
-            LeftToRight,
-            RightToLeft
-        }
-
-        public enum ColumnDirection
-        {
-            UpToDown,
-            DownToUp
-        }
-
-        public enum DiagonalDirection
-        {
-            NE,
-            SE,
-            SW,
-            NW
+            Verticals,
+            Diagonals
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using static AdventOfCode2024.Day4Utilities;
 
 namespace AdventOfCode2024
 {
@@ -35,6 +36,12 @@ namespace AdventOfCode2024
         }
 
         private static int ComputeVerticals(IEnumerable<string> lines, int numberOfLines, int numberOfChars, string searchWord)
+            => ComputeForMultipleRows(lines, numberOfLines, numberOfChars, searchWord, SearchType.Verticals);
+
+        private static int ComputeDiagonals(IEnumerable<string> lines, int numberOfLines, int numberOfChars, string searchWord)
+            => ComputeForMultipleRows(lines, numberOfLines, numberOfChars, searchWord, SearchType.Diagonals);
+
+        private static int ComputeForMultipleRows(IEnumerable<string> lines, int numberOfLines, int numberOfChars, string searchWord, SearchType searchType)
         {
             var counter = 0;
             var linesList = new List<string>() { "", "", "", "" };
@@ -47,8 +54,8 @@ namespace AdventOfCode2024
                 linesList[currentLine] = linesEnumerator.Current;
             }
 
-            // Search in the columns of the first lines.
-            counter += CountWordInColumns(linesList, numberOfChars, searchWord);
+            // Search in the first lines.
+            counter += CountWords(linesList, numberOfChars, searchWord, searchType);
 
             // With the first lines already in the list, let's iterate over all the lines.
             for (var currentLine = 4; currentLine < numberOfLines; currentLine++)
@@ -60,11 +67,24 @@ namespace AdventOfCode2024
                 linesList[2] = linesList[3];
                 linesList[3] = linesEnumerator.Current;
 
-                // Search in the columns of the current lines.
-                counter += CountWordInColumns(linesList, numberOfChars, searchWord);
+                // Search in current lines.
+                counter += CountWords(linesList, numberOfChars, searchWord, searchType);
             }
 
             return counter;
+        }
+
+        private static int CountWords(List<string> lines, int numberOfChars, string searchWord, SearchType searchType)
+        {
+            switch (searchType)
+            {
+                case SearchType.Verticals:
+                    return CountWordInColumns(lines, numberOfChars, searchWord);
+                case SearchType.Diagonals:
+                    return CountWordInDiagonals(lines, numberOfChars, searchWord);
+                default:
+                    throw new Exception("Non-implemented search type.");
+            }
         }
 
         /// <summary>
@@ -86,39 +106,6 @@ namespace AdventOfCode2024
                 {
                     counter++;
                 }
-            }
-
-            return counter;
-        }
-
-        private static int ComputeDiagonals(IEnumerable<string> lines, int numberOfLines, int numberOfChars, string searchWord)
-        {
-            var counter = 0;
-            var linesList = new List<string>() { "", "", "", "" };
-            var linesEnumerator = lines.GetEnumerator();
-
-            // Save the first lines in the list.
-            for (var currentLine = 0; currentLine < 4; currentLine++)
-            {
-                linesEnumerator.MoveNext();
-                linesList[currentLine] = linesEnumerator.Current;
-            }
-
-            // Search in the diagonals of the first lines.
-            counter += CountWordInDiagonals(linesList, numberOfChars, searchWord);
-
-            // With the first lines already in the list, let's iterate over all the lines.
-            for (var currentLine = 4; currentLine < numberOfLines; currentLine++)
-            {
-                // Shift the lines for the next iteration.
-                linesEnumerator.MoveNext();
-                linesList[0] = linesList[1];
-                linesList[1] = linesList[2];
-                linesList[2] = linesList[3];
-                linesList[3] = linesEnumerator.Current;
-
-                // Search in the diagonals of the current lines.
-                counter += CountWordInDiagonals(linesList, numberOfChars, searchWord);
             }
 
             return counter;
