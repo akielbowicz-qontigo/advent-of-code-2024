@@ -13,7 +13,7 @@
     (= (int day) 1) (day1 lines)
     (= (int day) 2) (day2/day2-2 lines)
     (= (int day) 3) (day3/day3 lines)
-    (= (int day) 4) (day4/part-1 lines)
+    (= (int day) 4) (day4/part-2 lines)
     :else (+ 100 day)))
 
 (comment
